@@ -5,17 +5,17 @@ import (
 	"fmt"
 	"log"
 
-	_ "github.com/mattn/go-sqlite3"
+	_ "modernc.org/sqlite"
 )
 
 type Client struct {
-	Id    int
+	ID    int
 	Name  string
 	Email string
 }
 
 func main() {
-	db, err := sql.Open("sqlite3", "./client.db")
+	db, err := sql.Open("sqlite", "./clients.db")
 	if err != nil {
 		log.Fatal("We have an Error here:", err)
 	}

@@ -1,7 +1,53 @@
 package main
 
-import "fmt"
+import (
+	"database/sql"
+	"fmt"
+	"log"
+
+	_ "github.com/mattn/go-sqlite3"
+)
+
+type Client struct {
+	Id    int
+	Name  string
+	Email string
+}
 
 func main() {
-	fmt.Println("Here We Go!")
+	db, err := sql.Open("sqlite3", "./client.db")
+	if err != nil {
+		log.Fatal("We have an Error here:", err)
+	}
+
+	defer func(db *sql.DB) {
+		err := db.Close()
+		if err != nil {
+			fmt.Println("Close db Error:", err)
+		}
+	}(db)
+
+	err = db.Ping()
+	if err != nil {
+		log.Fatal("Error connection to DB (Ping):", err)
+	}
+
+	fmt.Println("Connected to DB")
+
+	createTableSQL := `
+	CREATE TABLE IF NOT EXISTS clients (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		name TEXT NOT NULL,
+		email TEXT NOT NULL UNIQUE
+	);`
+
+	_, err = db.Exec(createTableSQL)
+
+	if err != nil {
+
+		log.Fatal("Error created table:", err)
+	}
+
+	fmt.Println("Table 'clients' created successful (or already created).")
+
 }

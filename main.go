@@ -50,4 +50,40 @@ func main() {
 
 	fmt.Println("Table 'clients' created successful (or already created).")
 
+	// Insert a new client
+	newClient := Client{
+		Name:  "John Doe",
+		Email: "john.doe@example.com",
+	}
+
+	insertSQL := `
+		INSERT INTO clients (name, email) VALUES (?, ?)
+	`
+
+	result, err := db.Exec(insertSQL, newClient.Name, newClient.Email)
+	if err != nil {
+		log.Fatal("Error inserting client:", err)
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		log.Fatal("Error getting affected rows:", err)
+	}
+
+	lastInsertID, err := result.LastInsertId()
+	if err != nil {
+		log.Fatal("Error getting last insert ID:", err)
+	}
+
+	fmt.Printf("Client inserted successfully. Rows affected: %d, Last Insert ID: %d\n", rowsAffected, lastInsertID)
+
+	newClient2 := Client{
+		Name:  "Jane Smith",
+		Email: "jane.smith@example.com",
+	}
+	_, err = db.Exec(insertSQL, newClient2.Name, newClient2.Email)
+	if err != nil {
+		log.Fatal("Error inserting client:", err)
+	}
+	fmt.Println("Client inserted successfully.")
 }

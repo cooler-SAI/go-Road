@@ -58,6 +58,43 @@ func clearExistingClients(db *sql.DB) error {
 	return nil
 }
 
+func getAllClientsID(db *sql.DB) ([]Client, error) {
+	selectSQL := `SELECT id, name, email FROM clients`
+	rows, err := db.Query(selectSQL)
+	if err != nil {
+		return nil, fmt.Errorf("failed to retrieve all clients: %w", err)
+	}
+
+	defer func(rows *sql.Rows) {
+		err := rows.Close()
+		if err != nil {
+			log.Println("Warning: failed to close rows:", err)
+		}
+	}(rows)
+
+	var clients []Client
+
+	for rows.Next() {
+		var client Client
+
+		if err := rows.Scan(&client.ID, &client.Name, &client.Email); err != nil {
+
+			log.Printf("ERROR: Failed to scan row while getting all clients: %v\n", err)
+			return nil, err
+		}
+
+		clients = append(clients, client)
+	}
+
+	if err = rows.Err(); err != nil {
+		fmt.Printf("ERROR: Failed to scan row while getting all clients: %v\n", err)
+		return nil, err
+	}
+	log.Printf("SUCCESS: Found %d clients", len(clients))
+	return clients, nil
+
+}
+
 func main() {
 	db, err := sql.Open("sqlite", "./clients.db")
 	if err != nil {

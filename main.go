@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"log"
 	_ "modernc.org/sqlite"
@@ -26,6 +27,27 @@ func addClient(db *sql.DB, client Client) (int64, error) {
 	}
 
 	return lastInsertID, nil
+}
+
+func getClientByID(db *sql.DB, id int) (Client, error) {
+	selectSQL := `SELECT id, name, email FROM clients WHERE id = ?`
+	row := db.QueryRow(selectSQL, id)
+	var client Client
+	err := row.Scan(&client.ID, &client.Name, &client.Email)
+	if err != nil {
+
+		if errors.Is(err, sql.ErrNoRows) {
+			log.Printf("INFO: No client found with ID %d\n", id)
+
+			return Client{}, fmt.Errorf("client with ID %d not found", id)
+		}
+
+		log.Printf("ERROR: Failed to scan client data for ID %d: %v\n", id, err)
+		return Client{}, err
+	}
+	log.Printf("SUCCESS: Found client ID=%d, Name=%s, Email=%s\n", client.ID, client.Name, client.Email)
+	return client, nil
+
 }
 
 func clearExistingClients(db *sql.DB) error {

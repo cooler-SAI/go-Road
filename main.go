@@ -185,4 +185,16 @@ func main() {
 	} else {
 		fmt.Printf("-> Found in main: %+v\n", foundClient99)
 	}
+
+	fmt.Println("\nGetting all clients:")
+	allClients, err := getAllClientsID(db)
+	if err != nil {
+		log.Printf("-> Error in main getting all clients: %v\n", err)
+	} else {
+		fmt.Printf("-> Found %d clients in main:\n", len(allClients))
+		for i, client := range allClients {
+
+			fmt.Printf("  [%d]: %+v\n", i, client)
+		}
+	}
 }

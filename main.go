@@ -127,4 +127,25 @@ func main() {
 
 	fmt.Println("scanning clients by ClientID:")
 
+	fmt.Println("scanning for ID:1..")
+	if foundClient1, err := getClientByID(db, 1); err != nil {
+		fmt.Println("ERROR: Failed to get client by ID:", err)
+	} else {
+		fmt.Printf("Found client: ID=%d, Name=%s, Email=%s\n", foundClient1.ID, foundClient1.Name, foundClient1.Email)
+	}
+
+	fmt.Println("\nGetting client with ID 2:")
+	foundClient2, err := getClientByID(db, 2)
+	if err != nil {
+		log.Printf("-> Error in main getting client 2: %v\n", err)
+	} else {
+		fmt.Printf("-> Found in main: %+v\n", foundClient2)
+	}
+
+	foundClient99, err := getClientByID(db, 99)
+	if err != nil {
+		log.Printf("-> Error in main getting client 99: %v\n", err)
+	} else {
+		fmt.Printf("-> Found in main: %+v\n", foundClient99)
+	}
 }

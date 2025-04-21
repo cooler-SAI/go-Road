@@ -124,4 +124,7 @@ func main() {
 	}
 
 	fmt.Println("\nClient operations completed.")
+
+	fmt.Println("scanning clients by ClientID:")
+
 }

@@ -110,4 +110,31 @@ func main() {
 			fmt.Printf("  [%d]: %+v\n", i, client)
 		}
 	}
+
+	fmt.Println("Testing for delete few rows.....")
+
+	fmt.Println("Deleting Bob Brown (ID=4)...")
+	err = tools.DeleteClient(db, 4)
+	if err != nil {
+		log.Printf("-> Error returned to main deleting client 4: %v\n", err)
+	} else {
+		fmt.Println("-> Delete successful for Bob Brown.")
+
+		_, errGetBob := tools.GetClientByID(db, 4)
+		if errGetBob != nil {
+			fmt.Printf("   Verified: Bob Brown (ID=4) not found, as expected.\n")
+		} else {
+			fmt.Println("   ERROR: Bob Brown (ID=4) still found after delete!")
+		}
+	}
+
+	fmt.Println("\nAttempting to delete non-existent client (ID=99)...")
+	err = tools.DeleteClient(db, 99)
+	if err != nil {
+
+		log.Printf("-> Expected error received in main deleting client 99: %v\n", err)
+	} else {
+		log.Println("ERROR: Deleted client 99 unexpectedly!")
+	}
+
 }

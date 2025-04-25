@@ -80,7 +80,8 @@ func main() {
 	if foundClient1, err := tools.GetClientByID(db, 1); err != nil {
 		fmt.Println("ERROR: Failed to get client by ID:", err)
 	} else {
-		fmt.Printf("Found client: ID=%d, Name=%s, Email=%s\n", foundClient1.ID, foundClient1.Name, foundClient1.Email)
+		fmt.Printf("Found client: ID=%d, Name=%s, Email=%s\n",
+			foundClient1.ID, foundClient1.Name, foundClient1.Email)
 	}
 
 	fmt.Println("\nGetting client with ID 2:")

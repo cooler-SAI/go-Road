@@ -44,7 +44,7 @@ func GetClientByID(db *sql.DB, id int) (Client, error) {
 		log.Printf("ERROR: Failed to scan client data for ID %d: %v\n", id, err)
 		return Client{}, err
 	}
-	log.Printf("SUCCESS: Found client ID=%d, Name=%s, Email=%s\n", client.ID, client.Name, client.Email)
+	log.Printf("SUCCESS: Found client %+v\n", client)
 	return client, nil
 
 }
@@ -64,12 +64,11 @@ func GetAllClientsID(db *sql.DB) ([]Client, error) {
 		return nil, fmt.Errorf("failed to retrieve all clients: %w", err)
 	}
 
-	defer func(rows *sql.Rows) {
-		err := rows.Close()
-		if err != nil {
-			log.Println("Warning: failed to close rows:", err)
+	defer func() {
+		if err := rows.Close(); err != nil {
+			log.Printf("Warning: failed to close rows: %v", err)
 		}
-	}(rows)
+	}()
 
 	var clients []Client
 
@@ -85,10 +84,6 @@ func GetAllClientsID(db *sql.DB) ([]Client, error) {
 		clients = append(clients, client)
 	}
 
-	if err = rows.Err(); err != nil {
-		fmt.Printf("ERROR: Failed to scan row while getting all clients: %v\n", err)
-		return nil, err
-	}
 	log.Printf("SUCCESS: Found %d clients", len(clients))
 	return clients, nil
 
@@ -143,7 +138,7 @@ func UpdateClient(db *sql.DB, client Client) error {
 		return fmt.Errorf("client with ID %d not found for update", client.ID)
 	}
 
-	log.Printf("SUCCESS (tools): Updated client ID=%d. Name=%s, Email=%s (RowsAffected: %d)\n",
-		client.ID, client.Name, client.Email, rowsAffected)
+	log.Printf("SUCCESS (tools): Updated client %+v (RowsAffected: %d)\n",
+		client, rowsAffected)
 	return nil
 }

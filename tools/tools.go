@@ -93,3 +93,57 @@ func GetAllClientsID(db *sql.DB) ([]Client, error) {
 	return clients, nil
 
 }
+
+func DeleteClient(db *sql.DB, id int) error {
+	if id == 0 {
+		return fmt.Errorf("cannot delete client with zero ID")
+	}
+	deleteSQL := `DELETE FROM clients WHERE id = ?`
+	result, err := db.Exec(deleteSQL, id)
+	if err != nil {
+		log.Printf("ERROR (tools): Failed to execute delete for client ID %d: %v\n", id, err)
+		return fmt.Errorf("failed to delete client ID %d: %w", id, err)
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		log.Printf("Warning (tools): Failed to get RowsAffected after delete for ID %d: %v\n", id, err)
+	}
+
+	if rowsAffected == 0 {
+
+		log.Printf("INFO (tools): No client found with ID %d to delete.\n", id)
+		return fmt.Errorf("client with ID %d not found for delete", id)
+	}
+
+	log.Printf("SUCCESS (tools): Deleted client ID=%d (RowsAffected: %d)\n", id, rowsAffected)
+	return nil
+}
+
+func UpdateClient(db *sql.DB, client Client) error {
+
+	if client.ID == 0 {
+		return fmt.Errorf("cannot update client with zero ID")
+	}
+	updateSQL := `UPDATE clients SET name = ?, email = ? WHERE id = ?`
+	result, err := db.Exec(updateSQL, client.Name, client.Email, client.ID)
+	if err != nil {
+		log.Printf("ERROR (tools): Failed to execute update for client ID %d: %v\n", client.ID, err)
+		return fmt.Errorf("failed to update client ID %d: %w", client.ID, err)
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+
+		log.Printf("Warning (tools): Failed to get RowsAffected after update for ID %d: %v\n", client.ID, err)
+	}
+
+	if rowsAffected == 0 {
+		log.Printf("INFO (tools): No client found with ID %d to update.\n", client.ID)
+		return fmt.Errorf("client with ID %d not found for update", client.ID)
+	}
+
+	log.Printf("SUCCESS (tools): Updated client ID=%d. Name=%s, Email=%s (RowsAffected: %d)\n",
+		client.ID, client.Name, client.Email, rowsAffected)
+	return nil
+}

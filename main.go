@@ -128,6 +128,20 @@ func main() {
 		}
 	}
 
+	fmt.Println("\nAttempting to update non-existent client (ID=99)...")
+	nonExistentUpdate := tools.Client{
+		ID:    99,
+		Name:  "Nobody",
+		Email: "nobody@nowhere.com",
+	}
+	err = tools.UpdateClient(db, nonExistentUpdate)
+	if err != nil {
+
+		log.Printf("-> Expected error received in main updating client 99: %v\n", err)
+	} else {
+		log.Println("ERROR: Updated client 99 unexpectedly!")
+	}
+
 	fmt.Println("\nAttempting to delete non-existent client (ID=99)...")
 	err = tools.DeleteClient(db, 99)
 	if err != nil {

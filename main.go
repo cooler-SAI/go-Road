@@ -14,6 +14,13 @@ const createTableSQL = `
 		email TEXT NOT NULL UNIQUE
 	);`
 
+const createTableSQLNew = `
+	CREATE TABLE IF NOT EXISTS phones (
+    	id INTEGER PRIMARY KEY AUTOINCREMENT,
+    	client_id INTEGER NOT NULL,
+    	phone_number TEXT NOT NULL
+	)`
+
 func createTable(db *sql.DB) {
 	log.Println("Creating/verifying table 'clients'")
 	_, err := db.Exec(createTableSQL)
@@ -21,6 +28,15 @@ func createTable(db *sql.DB) {
 		log.Fatalf("Failed to create table: %v", err)
 	}
 	log.Println("Table 'clients' created/verified")
+}
+
+func createTablePhones(db *sql.DB) {
+	log.Println("Creating/verifying table 'phones'")
+	_, err := db.Exec(createTableSQLNew)
+	if err != nil {
+		log.Fatalf("Failed to create table: %v", err)
+	}
+	log.Println("Table 'phones' created/verified")
 }
 
 func addInitialClients(db *sql.DB, clients []tools.Client) {
@@ -141,6 +157,7 @@ func main() {
 	log.Println("Connected to database successfully")
 
 	createTable(db)
+	createTablePhones(db)
 
 	// Clear existing data to start fresh
 	if err := tools.ClearExistingClients(db); err != nil {

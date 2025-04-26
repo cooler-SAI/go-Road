@@ -13,6 +13,13 @@ type Client struct {
 	Email string
 }
 
+type Phone struct {
+	ID          int
+	ClientID    int
+	PhoneNumber string
+	CreatedDate string
+}
+
 func AddClient(db *sql.DB, client Client) (int64, error) {
 	insertSQL := `INSERT INTO clients (name, email) VALUES (?, ?)`
 	result, err := db.Exec(insertSQL, client.Name, client.Email)
@@ -23,6 +30,23 @@ func AddClient(db *sql.DB, client Client) (int64, error) {
 	lastInsertID, err := result.LastInsertId()
 	if err != nil {
 		return 0, fmt.Errorf("client '%s' added, but failed to get LastInsertId: %w", client.Name, err)
+	}
+
+	return lastInsertID, nil
+}
+
+func AddPhone(db *sql.DB, phone Phone) (int64, error) {
+	insertSQL := `INSERT INTO phones (client_id, phone_number, created_date) VALUES (?, ?, ?)`
+	result, err := db.Exec(insertSQL, phone.ClientID, phone.PhoneNumber, phone.CreatedDate)
+	if err != nil {
+		return 0, fmt.Errorf("failed to add phone '%s' (%s): %w",
+			phone.PhoneNumber, phone.CreatedDate, err)
+	}
+
+	lastInsertID, err := result.LastInsertId()
+	if err != nil {
+		return 0, fmt.Errorf("phone '%s' added,"+
+			" but failed to get LastInsertId: %w", phone.PhoneNumber, err)
 	}
 
 	return lastInsertID, nil

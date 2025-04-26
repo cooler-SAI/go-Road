@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"go-Road/tools"
 	"log"
+	"time"
+
 	_ "modernc.org/sqlite"
 )
 
@@ -18,7 +20,8 @@ const createTableSQLNew = `
 	CREATE TABLE IF NOT EXISTS phones (
     	id INTEGER PRIMARY KEY AUTOINCREMENT,
     	client_id INTEGER NOT NULL,
-    	phone_number TEXT NOT NULL
+    	phone_number TEXT NOT NULL,
+		created_date TEXT NOT NULL
 	)`
 
 func createTable(db *sql.DB) {
@@ -47,6 +50,18 @@ func addInitialClients(db *sql.DB, clients []tools.Client) {
 			log.Printf("Error adding client %s: %v\n", client.Name, err)
 		} else {
 			log.Printf("Added client: ID=%d, Name=%s, Email=%s\n", id, client.Name, client.Email)
+		}
+	}
+}
+
+func addInitialPhones(db *sql.DB, phones []tools.Phone) {
+	log.Println("\nAdding initial phones:")
+	for _, phone := range phones {
+		id, err := tools.AddPhone(db, phone)
+		if err != nil {
+			log.Printf("Error adding phone %s: %v\n", phone.PhoneNumber, err)
+		} else {
+			log.Printf("Added phone: ID=%d, ClientID=%d, PhoneNumber=%s\n", id, phone.ClientID, phone.PhoneNumber)
 		}
 	}
 }
@@ -177,6 +192,18 @@ func main() {
 	}
 
 	addInitialClients(db, clients)
+
+	// Define test phones
+	var phones = []tools.Phone{
+		{ClientID: 1, PhoneNumber: "+1-555-123-4567", CreatedDate: time.Now().Format("2006-01-02 15:04:05")},
+		{ClientID: 1, PhoneNumber: "+1-555-987-6543", CreatedDate: time.Now().Format("2006-01-02 15:04:05")},
+		{ClientID: 2, PhoneNumber: "+1-555-111-2222", CreatedDate: time.Now().Format("2006-01-02 15:04:05")},
+		{ClientID: 3, PhoneNumber: "+1-555-333-4444", CreatedDate: time.Now().Format("2006-01-02 15:04:05")},
+		{ClientID: 4, PhoneNumber: "+1-555-555-6666", CreatedDate: time.Now().Format("2006-01-02 15:04:05")},
+		{ClientID: 5, PhoneNumber: "+1-555-777-8888", CreatedDate: time.Now().Format("2006-01-02 15:04:05")},
+	}
+
+	addInitialPhones(db, phones)
 	testDuplicateHandling(db)
 	testClientOperations(db)
 }
